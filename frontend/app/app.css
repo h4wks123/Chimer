@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: hsl(240, 10%, 4%);
+  --color-primary: hsl(142, 70%, 45%);
+  --color-secondary: hsl(240, 5%, 10%);
+  --color-accent: hsl(142, 50%, 12%);
+  --color-default: hsl(0, 0%, 95%);
+  --color-muted: hsl(215, 10%, 45%);
+
+  --color-warning: hsl(45, 100%, 51%);
+  --color-success: hsl(145, 60%, 45%);
+  --color-error: hsl(0, 85%, 60%);
+  --color-updated: hsl(210, 90%, 60%);
+}
+
+:root {
+  --color-background: hsl(240, 10%, 4%);
+  --color-primary: hsl(142, 70%, 45%);
+  --color-secondary: hsl(240, 5%, 10%);
+  --color-accent: hsl(142, 50%, 12%);
+  --color-default: hsl(0, 0%, 95%);
+  --color-muted: hsl(215, 10%, 45%);
+
+  --color-warning: hsl(45, 100%, 51%);
+  --color-success: hsl(145, 60%, 45%);
+  --color-error: hsl(0, 85%, 60%);
+  --color-updated: hsl(210, 90%, 60%);
+}
+
+body {
+  background-color: var(--color-background);
+}
