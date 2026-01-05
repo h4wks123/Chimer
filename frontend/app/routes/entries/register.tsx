@@ -35,8 +35,8 @@ export default function Register() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(async (values: SignUpType) => {
-          const data = await SignUp(values, navigate);
-          if (data) form.reset();
+          await SignUp(values, navigate);
+          form.reset();
         })}
         className="w-[min(100%,30rem)] relative left-1/2 top-1/2 -translate-1/2 space-y-8 bg-background text-default border border-secondary p-12 rounded-2xl z-50"
       >
