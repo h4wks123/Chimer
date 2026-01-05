@@ -1,13 +1,12 @@
 import { z } from "zod";
 
 export const signInSchema = z.object({
-  email: z.string().email({
-    message: "Email must have valid email format.",
-  }),
-  password: z
-    .string()
-    .min(8, "Password must at least be 8 characters long.")
-    .regex(/\d/, "Password must contain at least one number"),
+  email: z
+    .email({
+      message: "Email must have valid email format.",
+    })
+    .min(1, { message: "Email must not be empty." }),
+  password: z.string().min(1, { message: "Password must not be empty." }),
 });
 
 export type SignInType = z.infer<typeof signInSchema>;
