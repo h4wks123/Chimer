@@ -12,8 +12,28 @@ export async function SignIn(values: SignInType, navigate: NavigateFunction) {
       rememberMe: true,
     });
 
+    if (error) {
+      throw new Error(error.message || "Sign in failed");
+    }
+
     toaster(200, "Successfully logged in!");
     navigate("/");
+  } catch (err) {
+    toaster(400, "Login failed");
+  }
+}
+
+export async function GoogleSignIn() {
+  try {
+    const data = await authClient.signIn.social({
+      provider: "google",
+    });
+
+    if (data.error) {
+      throw new Error(data.error.message || "Sign in failed");
+    }
+
+    toaster(200, "Successfully logged in!");
   } catch (err) {
     toaster(400, "Login failed");
   }

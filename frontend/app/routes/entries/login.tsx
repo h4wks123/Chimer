@@ -16,7 +16,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "~/components/shadcn/input-group";
-import { SignIn } from "~/handlers/entries";
+import { GoogleSignIn, SignIn } from "~/handlers/entries";
 import { useNavigate } from "react-router";
 
 export default function Login() {
@@ -66,7 +66,6 @@ export default function Login() {
                       type="email"
                       autoComplete="email"
                       placeholder="user@chimer.net"
-                      className="bg-background"
                       {...field}
                     />
                     <InputGroupAddon>
@@ -90,7 +89,6 @@ export default function Login() {
                       type="password"
                       autoComplete="password"
                       placeholder="*****************"
-                      className="bg-background"
                       {...field}
                     />
                     <InputGroupAddon>
@@ -104,15 +102,30 @@ export default function Login() {
           />
           <button
             type="submit"
-            className="h-12 w-full flex justify-center items-center rounded-lg gap-1 border-2 border-accent hover:border-primary cursor-pointer"
+            className="bg-black h-12 w-full flex justify-center items-center rounded-lg gap-1 border-2 border-accent hover:border-primary cursor-pointer"
           >
             <h6 className="text-default text-md">INITIATE SESSION</h6>
             <ArrowRight className="size-4" />
           </button>
           <div className="w-full gap-3 flex justify-center items-center">
-            <div className="bg-muted h-0.5 w-full" />
+            <div className="bg-muted h-px w-full" />
             <p className="text-nowrap text-muted text-md">OR CONNECT VIA</p>
-            <div className="bg-muted h-0.5 w-full" />
+            <div className="bg-muted h-px w-full" />
+          </div>
+          <div className="flex flex-wrap sm:flex-nowrap justify-between items-center gap-4">
+            <button
+              type="button"
+              onClick={() => GoogleSignIn()}
+              className="w-full bg-black border-muted hover:border-white flex justify-center items-center p-3 rounded-lg border cursor-pointer"
+            >
+              <p className="tex t-muted text-md font-semibold">GOOGLE</p>
+            </button>
+            <button
+              type="button"
+              className="w-full bg-black border-muted hover:border-white flex justify-center items-center p-3 rounded-lg border cursor-pointer"
+            >
+              <p className="text-muted text-md font-semibold">GITHUB</p>
+            </button>
           </div>
           <div className="flex gap-2 mx-auto">
             <p className="text-muted text-md">New to chimer? </p>
