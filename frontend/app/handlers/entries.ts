@@ -1,7 +1,7 @@
 import toaster from "~/components/ui/toaster";
-import type { SignInType } from "~/types/signIn";
+import type { SignInType } from "~/types/sign-in";
 import type { NavigateFunction } from "react-router";
-import type { SignUpType } from "~/types/signUp";
+import type { SignUpType } from "~/types/sign-up";
 
 export async function SignIn(values: SignInType, navigate: NavigateFunction) {
   console.log(values);

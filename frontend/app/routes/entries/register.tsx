@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { signUpSchema, type SignUpType } from "~/types/signUp";
+import { signUpSchema, type SignUpType } from "~/types/sign-up";
 import { MessageSquare, ArrowRight, AtSign, LockIcon } from "lucide-react";
 import {
   Form,

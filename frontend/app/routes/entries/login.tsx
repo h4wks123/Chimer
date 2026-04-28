@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/shadcn/form";
-import { signInSchema, type SignInType } from "~/types/signIn";
+import { signInSchema, type SignInType } from "~/types/sign-in";
 import { Link } from "react-router";
 import {
   InputGroup,

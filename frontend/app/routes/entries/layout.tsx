@@ -1,4 +1,4 @@
-import { GridScan } from "~/components/ui/gridScan";
+import { GridScan } from "~/components/ui/grid-scan";
 import { Outlet } from "react-router";
 
 export default function Layout() {
