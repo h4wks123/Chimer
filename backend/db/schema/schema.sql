@@ -1,0 +1,36 @@
+CREATE DATABASE chimer;
+
+CREATE TABLE users (
+    user_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_name VARCHAR(256) NOT NULL,
+    user_email VARCHAR(256) NOT NULL UNIQUE,
+    user_passwd VARCHAR(256) NOT NULL,
+    user_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE friends (
+    friend_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(user_id),
+    friend_of_user_id BIGINT NOT NULL REFERENCES users(user_id),
+    friend_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE chats (
+    chat_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    chat_name VARCHAR(256),
+    chat_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE messages (
+    message_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(user_id),
+    chat_id BIGINT NOT NULL REFERENCES chats(chat_id),
+    message_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE members (
+    member_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(user_id),
+    chat_id BIGINT NOT NULL REFERENCES chats(chat_id),
+    member_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
