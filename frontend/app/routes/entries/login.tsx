@@ -16,7 +16,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "~/components/shadcn/input-group";
-import { GoogleSignIn, SignIn } from "~/handlers/entries";
+import { GithubSignIn, GoogleSignIn, SignIn } from "~/handlers/entries";
 import { useNavigate } from "react-router";
 
 export default function Login() {
@@ -116,15 +116,16 @@ export default function Login() {
             <button
               type="button"
               onClick={() => GoogleSignIn()}
-              className="w-full bg-black border-muted hover:border-white flex justify-center items-center p-3 rounded-lg border cursor-pointer"
+              className="w-full text-muted hover:text-white bg-black border-muted hover:border-white flex justify-center items-center p-3 rounded-lg border cursor-pointer"
             >
-              <p className="tex t-muted text-md font-semibold">GOOGLE</p>
+              <p className="text-md font-semibold">GOOGLE</p>
             </button>
             <button
               type="button"
-              className="w-full bg-black border-muted hover:border-white flex justify-center items-center p-3 rounded-lg border cursor-pointer"
+              onClick={() => GithubSignIn()}
+              className="w-full text-muted hover:text-white bg-black border-muted hover:border-white flex justify-center items-center p-3 rounded-lg border cursor-pointer"
             >
-              <p className="text-muted text-md font-semibold">GITHUB</p>
+              <p className="text-md font-semibold">GITHUB</p>
             </button>
           </div>
           <div className="flex gap-2 mx-auto">

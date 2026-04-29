@@ -25,18 +25,52 @@ export async function SignIn(values: SignInType, navigate: NavigateFunction) {
 
 export async function GoogleSignIn() {
   try {
-    const data = await authClient.signIn.social({
-      provider: "google",
-    });
+    const data = await authClient.signIn.social(
+      {
+        provider: "google",
+        callbackURL: import.meta.env.VITE_WEBSITE_URL,
+        errorCallbackURL: import.meta.env.VITE_WEBSITE_URL + "/login",
+      },
+      {
+        onSuccess: () => {
+          toaster(200, "Successfully logged in!");
+        },
+        onError: () => {
+          toaster(400, "Login failed");
+        },
+      },
+    );
 
     if (data.error) {
       throw new Error(data.error.message || "Sign in failed");
     }
-
-    toaster(200, "Successfully logged in!");
   } catch (err) {
     toaster(400, "Login failed");
   }
+}
+
+export async function GithubSignIn() {
+  try {
+    const data = await authClient.signIn.social(
+      {
+        provider: "github",
+        callbackURL: import.meta.env.VITE_WEBSITE_URL,
+        errorCallbackURL: import.meta.env.VITE_WEBSITE_URL + "/login",
+      },
+      {
+        onSuccess: () => {
+          toaster(200, "Successfully logged in!");
+        },
+        onError: () => {
+          toaster(400, "Login failed");
+        },
+      },
+    );
+
+    if (data.error) {
+      throw new Error(data.error.message || "Sign in failed");
+    }
+  } catch (err) {}
 }
 
 export async function SignUp(values: SignUpType, navigate: NavigateFunction) {
