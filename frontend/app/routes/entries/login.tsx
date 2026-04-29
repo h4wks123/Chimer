@@ -40,7 +40,7 @@ export default function Login() {
         className="w-[min(100%,30rem)] relative left-1/2 top-1/2 -translate-1/2 space-y-8 bg-background text-default border border-secondary p-12 rounded-2xl z-50"
       >
         <div className="flex flex-col justify-center gap-4">
-          <div className="flex flex-col gap-1 mb-6">
+          <div className="flex flex-col gap-1 mb-2">
             <div className="flex gap-4 mx-auto justify-center items-center">
               <div className="flex justify-center items-center bg-background border-2 border-primary/50 rounded-lg p-2">
                 <MessageSquare className="size-6 text-primary" />
@@ -61,7 +61,7 @@ export default function Login() {
               <FormItem className="flex flex-col gap-4">
                 <FormLabel className="text-muted text-md">IDENTITY</FormLabel>
                 <FormControl>
-                  <InputGroup className="flex rounded-lg border-2 border-secondary">
+                  <InputGroup className="h-12 flex rounded-lg border-2 border-secondary">
                     <InputGroupInput
                       type="email"
                       autoComplete="email"
@@ -84,7 +84,7 @@ export default function Login() {
               <FormItem className="flex flex-col gap-4">
                 <FormLabel className="text-muted text-md">PASSCODE</FormLabel>
                 <FormControl>
-                  <InputGroup className="flex rounded-lg border-2 border-secondary">
+                  <InputGroup className="h-12 flex rounded-lg border-2 border-secondary">
                     <InputGroupInput
                       type="password"
                       autoComplete="password"
