@@ -6,15 +6,18 @@ import {
   UserIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { data, useNavigate } from "react-router";
 import clsx from "clsx";
 import { SignOut } from "~/handlers/entries";
+import { userContext } from "~/middleware/context";
+import { authMiddleware } from "~/middleware/middleware";
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
+export const clientMiddleware: Route.MiddlewareFunction[] = [authMiddleware];
+
+export async function clientLoader({ context }: Route.ClientLoaderArgs) {
+  const userInfo = context.get(userContext);
+
+  return data(userInfo);
 }
 
 export default function Home() {
@@ -36,6 +39,7 @@ export default function Home() {
   /// connect via websocket
   const newSocket = new WebSocket("ws://localhost:3000");
   newSocket.onopen = () => console.log("connected");
+
   return (
     <main className="flex">
       <section
