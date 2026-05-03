@@ -48,9 +48,11 @@ export async function GithubSignIn() {
     });
 
     if (data.error) {
-      throw new Error(data.error.message || "Sign in failed");
+      throw new Error(data.error.message || "Sign in failed.");
     }
-  } catch (err) {}
+  } catch (err) {
+    toaster(400, "Login failed");
+  }
 }
 
 export async function SignUp(values: SignUpType, navigate: NavigateFunction) {
@@ -68,6 +70,25 @@ export async function SignUp(values: SignUpType, navigate: NavigateFunction) {
     toaster(200, "Successfully signed up!");
     navigate("/login");
   } catch (err) {
-    toaster(400, "Account registration failed");
+    toaster(400, "Account registration failed.");
+  }
+}
+
+export async function SignOut(navigate: NavigateFunction) {
+  try {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          toaster(200, "User logged out from session.");
+          navigate("/login");
+        },
+        onError: (err) => {
+          throw new Error(err.error.message || "Sign Out failed");
+        },
+      },
+    });
+  } catch (err) {
+    toaster(400, "User logout error.");
+    navigate("/login");
   }
 }

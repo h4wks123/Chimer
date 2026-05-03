@@ -1,7 +1,14 @@
 import type { Route } from "./+types/home";
-import { ArrowLeftIcon, MessageSquare, UserIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  LogOutIcon,
+  MessageSquare,
+  UserIcon,
+} from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import clsx from "clsx";
+import { SignOut } from "~/handlers/entries";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -13,6 +20,7 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   const [mobileView, setMobileView] = useState(false);
   const [displayChat, setDisplayChat] = useState(true);
+  const navigate = useNavigate();
 
   const mobileViewport = window.matchMedia("(width <= 800px)");
   const desktopViewport = window.matchMedia("(width > 800px)");
@@ -25,6 +33,9 @@ export default function Home() {
     if (e.matches) setMobileView(false);
   });
 
+  /// connect via websocket
+  const newSocket = new WebSocket("ws://localhost:3000");
+  newSocket.onopen = () => console.log("connected");
   return (
     <main className="flex">
       <section
@@ -60,12 +71,18 @@ export default function Home() {
           </div>
         </nav>
         <div className="h-px w-full bg-secondary" />
-        <div className="h-full w-full"></div>
+        <div className="h-full w-full" />
         <div className="h-px w-full bg-secondary" />
-        <div className="px-6 flex justify-between items-center">
+        <div className="w-full px-6 flex justify-between items-center">
           <div className="flex justify-center items-center rounded-lg p-2">
             <UserIcon className="size-6 text-primary" />
           </div>
+          <LogOutIcon
+            onClick={() => {
+              SignOut(navigate);
+            }}
+            className="size-6 text-primary cursor-pointer"
+          />
         </div>
       </section>
       <section

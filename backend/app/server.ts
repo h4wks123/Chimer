@@ -2,6 +2,7 @@ import express from "express";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./config/auth.js";
 import cors from "cors";
+import { WebSocketServer } from "ws";
 
 const app = express();
 const port = 3000;
@@ -24,4 +25,10 @@ const server = app.listen(port, () => {
 
 server.on("error", (err) => {
   console.error(`Server failed to start: ${err}`);
+});
+
+const wss = new WebSocketServer({ server, path: "/" });
+
+wss.on("connection", (ws, req) => {
+  console.log("Client connected!");
 });
