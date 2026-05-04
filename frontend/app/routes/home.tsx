@@ -20,10 +20,11 @@ export async function clientLoader({ context }: Route.ClientLoaderArgs) {
   return data(userInfo);
 }
 
-export default function Home() {
+export default function Home({ loaderData }: Route.ComponentProps) {
   const [mobileView, setMobileView] = useState(false);
   const [displayChat, setDisplayChat] = useState(true);
   const navigate = useNavigate();
+  const userInfo = loaderData.data.user;
 
   const mobileViewport = window.matchMedia("(width <= 800px)");
   const desktopViewport = window.matchMedia("(width > 800px)");
@@ -78,8 +79,17 @@ export default function Home() {
         <div className="h-full w-full" />
         <div className="h-px w-full bg-secondary" />
         <div className="w-full px-6 flex justify-between items-center">
-          <div className="flex justify-center items-center rounded-lg p-2">
-            <UserIcon className="size-6 text-primary" />
+          <div className="flex items-center rounded-lg p-2 gap-2">
+            <div className="p-1 bg-primary/50 rounded-sm border-primary border">
+              <UserIcon className="size-6 text-primary" />
+            </div>
+            <span className="text-default">
+              {userInfo.name
+                ? userInfo.name.length > 25
+                  ? userInfo.name.substring(0, 25) + "..."
+                  : userInfo.name
+                : "Name not found"}
+            </span>
           </div>
           <LogOutIcon
             onClick={() => {
