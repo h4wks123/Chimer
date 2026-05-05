@@ -3,6 +3,8 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./config/auth.js";
 import cors from "cors";
 import { WebSocketServer } from "ws";
+import messageRouter from "./routes/messages.js";
+import userRouter from "./routes/users.js";
 
 const app = express();
 const port = 3000;
@@ -14,6 +16,8 @@ const corsOption = {
 app.use(cors(corsOption));
 
 app.use("/api/auth", toNodeHandler(auth));
+app.use("/users", userRouter);
+app.use("/messages", messageRouter);
 
 // Mount express json middleware after Better Auth handler
 // or only apply it to routes that don't interact with Better Auth

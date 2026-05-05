@@ -5,12 +5,13 @@ import {
   MessageSquare,
   UserIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { data, useNavigate } from "react-router";
 import clsx from "clsx";
 import { SignOut } from "~/handlers/entries";
 import { userContext } from "~/middleware/context";
 import { authMiddleware } from "~/middleware/middleware";
+import ChatCard from "~/components/ui/chat-card";
 
 export const clientMiddleware: Route.MiddlewareFunction[] = [authMiddleware];
 
@@ -23,6 +24,9 @@ export async function clientLoader({ context }: Route.ClientLoaderArgs) {
 export default function Home({ loaderData }: Route.ComponentProps) {
   const [mobileView, setMobileView] = useState(false);
   const [displayChat, setDisplayChat] = useState(true);
+  const [isActive, setIsActive] = useState(0);
+  const [userData, setUserData] = useState<User[]>([]);
+
   const navigate = useNavigate();
   const userInfo = loaderData.data.user;
 
@@ -37,10 +41,19 @@ export default function Home({ loaderData }: Route.ComponentProps) {
     if (e.matches) setMobileView(false);
   });
 
-  /// connect via websocket
-  const newSocket = new WebSocket("ws://localhost:3000");
-  newSocket.onopen = () => console.log("connected");
+  async function fetchUsers() {
+    const result = await fetch("http://localhost:3000/users");
+    const data = await result.json();
 
+    setUserData(data.rows);
+  }
+
+  const newSocket = new WebSocket("ws://localhost:3000");
+  newSocket.onopen = () => console.log("client connected");
+
+  useEffect(() => {
+    fetchUsers();
+  });
   return (
     <main className="flex">
       <section
@@ -76,7 +89,16 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </div>
         </nav>
         <div className="h-px w-full bg-secondary" />
-        <div className="h-full w-full" />
+        <div className="h-full w-full flex flex-col gap-4 px-6">
+          {userData.map((user, idx) => (
+            <ChatCard
+              cardId={idx}
+              user={user}
+              isActive={isActive}
+              setIsActive={setIsActive}
+            />
+          ))}
+        </div>
         <div className="h-px w-full bg-secondary" />
         <div className="w-full px-6 flex justify-between items-center">
           <div className="flex items-center rounded-lg p-2 gap-2">
