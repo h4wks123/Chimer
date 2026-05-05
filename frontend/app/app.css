@@ -30,7 +30,7 @@
   --color-error: hsl(0, 85%, 60%);
   --color-updated: hsl(210, 90%, 60%);
 }
-
+  
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,

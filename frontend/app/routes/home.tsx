@@ -96,6 +96,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               user={user}
               isActive={isActive}
               setIsActive={setIsActive}
+              setDisplayChat={setDisplayChat}
             />
           ))}
         </div>

@@ -6,22 +6,25 @@ export default function ChatCard({
   user,
   isActive,
   setIsActive,
+  setDisplayChat,
 }: {
   cardId: number;
   user: User;
   isActive: number;
   setIsActive: Dispatch<SetStateAction<number>>;
+  setDisplayChat: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
     <div
       onClick={() => {
         setIsActive(cardId);
+        setDisplayChat(true);
       }}
       className={clsx(
-        "px-2 py-4 rounded-sm  cursor-pointer",
+        "px-2 py-4 rounded-sm  cursor-pointer border border-l-4 ",
         cardId == isActive
-          ? "border border-l-4 border-l-primary border-muted bg-secondary"
-          : "",
+          ? "border-l-primary border-muted bg-secondary"
+          : "border-transparent",
       )}
     >
       <span className="text-default font-semibold">{user.user_name}</span>
