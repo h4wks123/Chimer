@@ -7,3 +7,17 @@ type User = {
   user_created_at: string;
   user_updated_at: string;
 };
+
+type Chat = {
+  id: string;
+  chat_name: string;
+  chat_created_at: string;
+};
+
+type Message = {
+  id: string;
+  user_id: string;
+  chat_id: string;
+  message_text: string;
+  message_created_at: string;
+};

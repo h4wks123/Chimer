@@ -5,6 +5,7 @@ import cors from "cors";
 import { WebSocketServer } from "ws";
 import messageRouter from "./routes/messages.js";
 import userRouter from "./routes/users.js";
+import chatRouter from "./routes/chats.js";
 
 const app = express();
 const port = 3000;
@@ -17,6 +18,7 @@ app.use(cors(corsOption));
 
 app.use("/api/auth", toNodeHandler(auth));
 app.use("/users", userRouter);
+app.use("/chats", chatRouter);
 app.use("/messages", messageRouter);
 
 // Mount express json middleware after Better Auth handler

@@ -12,6 +12,7 @@ import { SignOut } from "~/handlers/entries";
 import { userContext } from "~/middleware/context";
 import { authMiddleware } from "~/middleware/middleware";
 import ChatCard from "~/components/ui/chat-card";
+import ChatBox from "~/components/ui/chat-box";
 
 export const clientMiddleware: Route.MiddlewareFunction[] = [authMiddleware];
 
@@ -26,6 +27,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const [displayChat, setDisplayChat] = useState(true);
   const [isActive, setIsActive] = useState(0);
   const [userData, setUserData] = useState<User[]>([]);
+  const [chatData, setChatData] = useState<Chat>();
+  const [messageData, setMessageData] = useState<Message[]>();
 
   const navigate = useNavigate();
   const userInfo = loaderData.data.user;
@@ -42,18 +45,55 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   });
 
   async function fetchUsers() {
-    const result = await fetch("http://localhost:3000/users");
-    const data = await result.json();
+    const response = await fetch("http://localhost:3000/users");
+
+    const data = await response.json();
 
     setUserData(data.rows);
+
+    return data.rows;
   }
 
-  const newSocket = new WebSocket("ws://localhost:3000");
-  newSocket.onopen = () => console.log("client connected");
+  async function fetchChat(userId: string) {
+    const response = await fetch(`http://localhost:3000/chats/${userId}`);
+
+    const data = await response.json();
+
+    setChatData(data.rows);
+    console.log(data.rows);
+    return data.rows;
+  }
+
+  async function fetchMessages(chatId: string) {
+    const response = await fetch(`http://localhost:3000/messages/${chatId}`);
+
+    const data = await response.json();
+
+    setMessageData(data.rows);
+
+    return data.rows;
+  }
 
   useEffect(() => {
     fetchUsers();
-  });
+  }, []);
+
+  useEffect(() => {
+    async function loadChatData() {
+      const selectedUser = userData[isActive];
+
+      if (!selectedUser) return;
+
+      const chat = await fetchChat(selectedUser.id);
+
+      if (!chat) return;
+      console.log(chat);
+      await fetchMessages(chat.id);
+    }
+
+    loadChatData();
+  }, [isActive, userData]);
+
   return (
     <main className="flex">
       <section
@@ -92,6 +132,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <div className="h-full w-full flex flex-col gap-4 px-6">
           {userData.map((user, idx) => (
             <ChatCard
+              key={idx}
               cardId={idx}
               user={user}
               isActive={isActive}
@@ -143,6 +184,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </div>
           <h1>Settings</h1>
         </div>
+        <ChatBox messageData={messageData} />
       </section>
     </main>
   );

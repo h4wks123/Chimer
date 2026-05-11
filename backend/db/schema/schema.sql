@@ -63,7 +63,8 @@ CREATE TABLE messages (
     id text not null primary key,
     user_id text not null references users(id) on delete cascade, 
     chat_id text not null references chats(id) on delete cascade, 
-    message_created_at timestamptz default CURRENT_TIMESTAMP not null 
+    message_text text not null,
+    message_created_at timestamptz default CURRENT_TIMESTAMP not null
 );
 
 CREATE TABLE members (
