@@ -53,25 +53,12 @@ CREATE TABLE friends (
     friend_created_at timestamptz default CURRENT_TIMESTAMP not null
 );
 
-CREATE TABLE chats (
-    id text not null primary key,
-    chat_name text not null,
-    chat_created_at timestamptz default CURRENT_TIMESTAMP not null
-);
-
 CREATE TABLE messages (
     id text not null primary key,
     user_id text not null references users(id) on delete cascade, 
-    chat_id text not null references chats(id) on delete cascade, 
+    sender_id text not null references users(id) on delete cascade, 
     message_text text not null,
     message_created_at timestamptz default CURRENT_TIMESTAMP not null
-);
-
-CREATE TABLE members (
-    id text not null primary key,
-    user_id text not null references users(id) on delete cascade, 
-    chat_id text not null references chats(id) on delete cascade,
-    member_created_at timestamptz default CURRENT_TIMESTAMP not null
 );
 
 create index sessions_user_id_idx on sessions(id);

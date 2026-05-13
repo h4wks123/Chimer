@@ -27,7 +27,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const [displayChat, setDisplayChat] = useState(true);
   const [isActive, setIsActive] = useState(0);
   const [userData, setUserData] = useState<User[]>([]);
-  const [chatData, setChatData] = useState<Chat>();
   const [messageData, setMessageData] = useState<Message[]>();
 
   const navigate = useNavigate();
@@ -54,18 +53,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
     return data.rows;
   }
 
-  async function fetchChat(userId: string) {
-    const response = await fetch(`http://localhost:3000/chats/${userId}`);
-
-    const data = await response.json();
-
-    setChatData(data.rows);
-    console.log(data.rows);
-    return data.rows;
-  }
-
-  async function fetchMessages(chatId: string) {
-    const response = await fetch(`http://localhost:3000/messages/${chatId}`);
+  async function fetchMessages(senderId: string) {
+    const response = await fetch(`http://localhost:3000/messages/${senderId}`);
 
     const data = await response.json();
 
@@ -73,26 +62,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
     return data.rows;
   }
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  useEffect(() => {
-    async function loadChatData() {
-      const selectedUser = userData[isActive];
-
-      if (!selectedUser) return;
-
-      const chat = await fetchChat(selectedUser.id);
-
-      if (!chat) return;
-      console.log(chat);
-      await fetchMessages(chat.id);
-    }
-
-    loadChatData();
-  }, [isActive, userData]);
 
   return (
     <main className="flex">

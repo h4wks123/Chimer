@@ -122,37 +122,10 @@ VALUES
     'FTKOGPccPSZwSqn48IFTLcV19q4oHZuX'
 );
 
-INSERT INTO chats (
-    id,
-    chat_name
-)
-VALUES
-(
-    'chat_01',
-    'Direct Message'
-);
-
-INSERT INTO members (
-    id,
-    user_id,
-    chat_id
-)
-VALUES
-(
-    'member_01',
-    'FTKOGPccPSZwSqn48IFTLcV19q4oHZuX',
-    'chat_01'
-),
-(
-    'member_02',
-    'WELnqN8OwRnXTu0U9bTi1Gm3eAiOq0O6',
-    'chat_01'
-);
-
 INSERT INTO messages (
     id,
     user_id,
-    chat_id,
+    sender_id,
     message_text,
     message_created_at
 )
@@ -160,14 +133,14 @@ VALUES
 (
     'message_01',
     'FTKOGPccPSZwSqn48IFTLcV19q4oHZuX',
-    'chat_01',
+    'WELnqN8OwRnXTu0U9bTi1Gm3eAiOq0O6',
     'Hello',
     CURRENT_TIMESTAMP
 ),
 (
     'message_02',
     'WELnqN8OwRnXTu0U9bTi1Gm3eAiOq0O6',
-    'chat_01',
+    'FTKOGPccPSZwSqn48IFTLcV19q4oHZuX',
     'Hi',
     CURRENT_TIMESTAMP
 );
