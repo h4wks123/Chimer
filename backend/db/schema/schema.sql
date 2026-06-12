@@ -10,7 +10,7 @@ CREATE TABLE users (
     user_updated_at timestamptz default CURRENT_TIMESTAMP not null
 );
 
-create table sessions (
+CREATE TABLE sessions (
     id text not null primary key, 
     session_expires_at timestamptz not null, 
     session_token text not null unique, 
@@ -21,7 +21,7 @@ create table sessions (
     user_id text not null references users(id) on delete cascade
 );
 
-create table accounts (
+CREATE TABLE accounts (
     id text not null primary key, 
     account_secondary_id text not null, 
     account_provider_id text not null, 
@@ -37,7 +37,7 @@ create table accounts (
     account_uploaded_at timestamptz not null
 );
 
-create table verifications (
+CREATE TABLE verifications (
     id text not null primary key, 
     verification_identifier text not null, 
     verification_value text not null, 
@@ -61,8 +61,8 @@ CREATE TABLE messages (
     message_created_at timestamptz default CURRENT_TIMESTAMP not null
 );
 
-create index sessions_user_id_idx on sessions(id);
+CREATE INDEX sessions_user_id_idx on sessions(id);
 
-create index accounts_user_id_idx on accounts(id);
+CREATE INDEX accounts_user_id_idx on accounts(id);
 
-create index verifications_verification_identifier_idx on verifications(verification_identifier);
+CREATE INDEX verifications_verification_identifier_idx on verifications(verification_identifier);

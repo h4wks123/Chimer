@@ -8,10 +8,10 @@ export default function ChatCard({
   setIsActive,
   setDisplayChat,
 }: {
-  cardId: number;
+  cardId: string;
   user: User;
-  isActive: number;
-  setIsActive: Dispatch<SetStateAction<number>>;
+  isActive: string | null;
+  setIsActive: Dispatch<SetStateAction<string | null>>;
   setDisplayChat: Dispatch<SetStateAction<boolean>>;
 }) {
   return (

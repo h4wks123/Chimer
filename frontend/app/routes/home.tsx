@@ -11,6 +11,7 @@ import clsx from "clsx";
 import { SignOut } from "~/handlers/entries";
 import { userContext } from "~/middleware/context";
 import { authMiddleware } from "~/middleware/middleware";
+import { useLoaderData } from "react-router";
 import ChatCard from "~/components/ui/chat-card";
 import ChatBox from "~/components/ui/chat-box";
 
@@ -25,9 +26,10 @@ export async function clientLoader({ context }: Route.ClientLoaderArgs) {
 export default function Home({ loaderData }: Route.ComponentProps) {
   const [mobileView, setMobileView] = useState(false);
   const [displayChat, setDisplayChat] = useState(true);
-  const [isActive, setIsActive] = useState(0);
+  const [isActive, setIsActive] = useState<string | null>(null);
   const [userData, setUserData] = useState<User[]>([]);
   const [messageData, setMessageData] = useState<Message[]>();
+  const profileData = useLoaderData();
 
   const navigate = useNavigate();
   const userInfo = loaderData.data.user;
@@ -44,17 +46,39 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   });
 
   async function fetchUsers() {
-    const response = await fetch("http://localhost:3000/users");
+    const response = await fetch("http://localhost:3000/users", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     const data = await response.json();
+
+    if (data.rows.length > 0) setIsActive(data.rows[0].id);
 
     setUserData(data.rows);
 
     return data.rows;
   }
 
-  async function fetchMessages(senderId: string) {
-    const response = await fetch(`http://localhost:3000/messages/${senderId}`);
+  async function fetchMessages(userId: string, senderId: string | null) {
+    const params = {
+      senderId: senderId ?? "",
+      userId: userId,
+    };
+
+    const queryString = new URLSearchParams(params).toString();
+
+    const response = await fetch(
+      `http://localhost:3000/messages/${queryString}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
 
     const data = await response.json();
 
@@ -62,6 +86,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
     return data.rows;
   }
+
+  useEffect(() => {
+    fetchUsers();
+    fetchMessages(profileData.data.user.id, isActive);
+  }, []);
 
   return (
     <main className="flex">
@@ -102,7 +131,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           {userData.map((user, idx) => (
             <ChatCard
               key={idx}
-              cardId={idx}
+              cardId={user.id}
               user={user}
               isActive={isActive}
               setIsActive={setIsActive}
