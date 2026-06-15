@@ -18,6 +18,7 @@ messageRouter.get("/", (req, res) => {
   const senderId = req.query.senderId;
 
   if (!userId || !senderId) {
+    logger.error(`Some of the request body are empty: ${userId} ${senderId}`);
     return res.status(400);
   }
 
@@ -47,25 +48,30 @@ messageRouter.get("/", (req, res) => {
 
   pool.query(sql, values, (err, result) => {
     if (err) {
-      logger.error(`Failed to send message: ${err}`);
+      logger.error(`Failed to fetch message: ${err}`);
       return res.status(500).send(err);
     }
 
-    res.status(201).json(result);
+    res.status(200).json(result);
   });
 });
 
-messageRouter.post("/send-text", (req, res) => {
-  const { user, text } = req.body;
+messageRouter.post("/send", (req, res) => {
+  const { userId, senderId, textMessage } = req.body;
 
-  if (!text) {
+  if (!userId || !senderId || !textMessage) {
+    logger.error(
+      `Some of the request body are empty: ${userId} ${senderId} ${textMessage}`,
+    );
     return res.status(400);
   }
 
-  const sql = `SELECT * FROM messages WHERE `;
+  const sql = `INSERT INTO messages (user_id, sender_id, message_text) VALUES ($1, $2, $3)`;
+  const values = [userId, senderId, textMessage];
 
-  pool.query(sql, (err, result) => {
+  pool.query(sql, values, (err, result) => {
     if (err) {
+      logger.error(`Failed to send message: ${err}`);
       return res.status(500).send(err);
     }
 
@@ -74,7 +80,7 @@ messageRouter.post("/send-text", (req, res) => {
 
   res.status(201).json({
     success: true,
-    message: "Message received.",
+    message: "Message updated.",
   });
 });
 

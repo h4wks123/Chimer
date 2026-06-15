@@ -14,6 +14,8 @@ import { authMiddleware } from "~/middleware/middleware";
 import { useLoaderData } from "react-router";
 import ChatCard from "~/components/ui/chat-card";
 import ChatBox from "~/components/ui/chat-box";
+import { FetchUsers } from "~/handlers/users";
+import { FetchMessages } from "~/handlers/messages";
 
 export const clientMiddleware: Route.MiddlewareFunction[] = [authMiddleware];
 
@@ -45,59 +47,23 @@ export default function Home({ loaderData }: Route.ComponentProps) {
     if (e.matches) setMobileView(false);
   });
 
-  async function fetchUsers() {
-    const params = {
-      userId: profileData.data.user.id ?? "",
-    };
-
-    const queryString = new URLSearchParams(params).toString();
-    const response = await fetch(`http://localhost:3000/users?${queryString}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await response.json();
-
-    if (data.rows.length > 0) setIsActive(data.rows[0].id);
-
-    setUserData(data.rows);
-
-    return data.rows;
-  }
-
-  async function fetchMessages(senderId: string | null) {
-    const params = {
-      senderId: senderId ?? "",
-      userId: profileData.data.user.id ?? "",
-    };
-
-    const queryString = new URLSearchParams(params).toString();
-    const response = await fetch(
-      `http://localhost:3000/messages?${queryString}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-
-    const data = await response.json();
-
-    setMessageData(data.rows[0]);
-
-    return data.rows;
-  }
-
   useEffect(() => {
     async function fetchData() {
-      const users = await fetchUsers();
-      const activeId =
-        isActive ?? (users && users.length > 0 ? users[0].id : null);
+      const users = await FetchUsers(
+        profileData.data.user.id ?? "",
+        setIsActive,
+        setUserData,
+      );
 
-      if (activeId != null) await fetchMessages(activeId);
+      const senderId =
+        isActive ?? (users && users.length > 0 ? users[0].id : "");
+
+      if (senderId)
+        await FetchMessages(
+          profileData.data.user.id ?? "",
+          senderId,
+          setMessageData,
+        );
     }
 
     fetchData();

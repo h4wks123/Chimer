@@ -15,7 +15,7 @@ userRouter.get("/", (req, res) => {
       return res.status(500).send(err);
     }
 
-    res.json(result);
+    res.status(200).json(result);
   });
 });
 

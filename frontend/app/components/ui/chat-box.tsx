@@ -1,10 +1,26 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { SendHorizonal } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { textInputSchema, type TextInputType } from "~/types/text-input";
+import { Form, FormControl, FormField, FormItem } from "../shadcn/form";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../shadcn/input-group";
+import { SendMessage } from "~/handlers/messages";
 
 export default function ChatBox({
   messageData,
 }: {
   messageData: Message | undefined;
 }) {
+  const form = useForm<TextInputType>({
+    resolver: zodResolver(textInputSchema),
+    defaultValues: {
+      input: "",
+    },
+  });
 
   return (
     <section className="p-6 size-full bg-background/50 flex flex-col justify-between gap-2">
@@ -24,12 +40,40 @@ export default function ChatBox({
           ))
         )}
       </div>
-      <div className="px-4 py-2 bg-secondary rounded-lg flex border border-background">
-        <input className="size-full bg-transparent text-default" />
-        <button className="p-1 rounded-lg bg-accent border border-primary">
-          <SendHorizonal className="size-4 text-primary" />
-        </button>
-      </div>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(async (values: TextInputType) => {
+            // await SendMessage();
+            form.reset();
+          })}
+          className="bg-secondary rounded-lg flex border border-background"
+        >
+          <FormField
+            control={form.control}
+            name="input"
+            render={({ field }) => (
+              <FormItem className="size-full bg-transparent text-default">
+                <FormControl>
+                  <InputGroup className="h-12 flex">
+                    <InputGroupInput
+                      type="input"
+                      autoComplete="input"
+                      placeholder="Aa"
+                      {...field}
+                    />
+                    <InputGroupAddon align={"inline-end"}>
+                      <SendHorizonal
+                        type="submit"
+                        className="size-4 text-primary"
+                      />
+                    </InputGroupAddon>
+                  </InputGroup>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
     </section>
   );
 }
