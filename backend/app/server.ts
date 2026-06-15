@@ -5,6 +5,7 @@ import cors from "cors";
 import { WebSocketServer } from "ws";
 import messageRouter from "./routes/messages.js";
 import userRouter from "./routes/users.js";
+import { pino } from "pino";
 
 const app = express();
 const port = 3000;
@@ -12,6 +13,15 @@ const corsOption = {
   origin: process.env.WEBSITE_URL,
   credentials: true,
 };
+const logger = pino({
+  level: "info",
+  transport: {
+    target: "pino-pretty",
+    options: {
+      colorize: true,
+    },
+  },
+});
 
 app.use(cors(corsOption));
 
@@ -24,15 +34,15 @@ app.use("/messages", messageRouter);
 app.use(express.json());
 
 const server = app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  logger.info(`Example app listening on port ${port}`);
 });
 
 server.on("error", (err) => {
-  console.error(`Server failed to start: ${err}`);
+  logger.error(`Server failed to start: ${err}`);
 });
 
 const wss = new WebSocketServer({ server, path: "/" });
 
 wss.on("connection", (ws, req) => {
-  console.log("Client connected!");
+  logger.info("Client connected!");
 });

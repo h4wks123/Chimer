@@ -28,7 +28,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const [displayChat, setDisplayChat] = useState(true);
   const [isActive, setIsActive] = useState<string | null>(null);
   const [userData, setUserData] = useState<User[]>([]);
-  const [messageData, setMessageData] = useState<Message[]>();
+  const [messageData, setMessageData] = useState<Message>();
   const profileData = useLoaderData();
 
   const navigate = useNavigate();
@@ -46,7 +46,12 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   });
 
   async function fetchUsers() {
-    const response = await fetch("http://localhost:3000/users", {
+    const params = {
+      userId: profileData.data.user.id ?? "",
+    };
+
+    const queryString = new URLSearchParams(params).toString();
+    const response = await fetch(`http://localhost:3000/users?${queryString}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -62,16 +67,15 @@ export default function Home({ loaderData }: Route.ComponentProps) {
     return data.rows;
   }
 
-  async function fetchMessages(userId: string, senderId: string | null) {
+  async function fetchMessages(senderId: string | null) {
     const params = {
       senderId: senderId ?? "",
-      userId: userId,
+      userId: profileData.data.user.id ?? "",
     };
 
     const queryString = new URLSearchParams(params).toString();
-
     const response = await fetch(
-      `http://localhost:3000/messages/${queryString}`,
+      `http://localhost:3000/messages?${queryString}`,
       {
         method: "GET",
         headers: {
@@ -88,8 +92,15 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   }
 
   useEffect(() => {
-    fetchUsers();
-    fetchMessages(profileData.data.user.id, isActive);
+    async function fetchData() {
+      const users = await fetchUsers();
+      const activeId =
+        isActive ?? (users && users.length > 0 ? users[0].id : null);
+
+      if (activeId != null) await fetchMessages(activeId);
+    }
+
+    fetchData();
   }, []);
 
   return (

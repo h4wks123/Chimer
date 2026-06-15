@@ -9,9 +9,12 @@ type User = {
 };
 
 type Message = {
-  id: string;
-  user_id: string;
-  sender_id: string;
-  message_text: string;
-  message_created_at: string;
+  sender_name: string;
+  messages: {
+    id: string;
+    user_id: string;
+    sender_id: string;
+    message_text: string;
+    message_created_at: string;
+  }[];
 };

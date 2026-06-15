@@ -4,9 +4,13 @@ import { pool } from "../config/psql-db";
 const userRouter = Router();
 
 userRouter.get("/", (req, res) => {
-  const sql = `SELECT * FROM users`;
+  const userId = req.query.userId;
 
-  pool.query(sql, (err, result) => {
+  const sql = `SELECT * FROM users WHERE id != $1`;
+
+  const values = [userId];
+
+  pool.query(sql, values, (err, result) => {
     if (err) {
       return res.status(500).send(err);
     }
