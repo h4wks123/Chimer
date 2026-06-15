@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { pool } from "../config/psql-db";
 import { pino } from "pino";
+import { v4 as uuidv4 } from "uuid";
 
 const messageRouter = Router();
 const logger = pino({
@@ -23,7 +24,7 @@ messageRouter.get("/", (req, res) => {
   }
 
   const sql = `
-    SELECT u.user_name, (
+    SELECT u.id, u.user_name, (
             SELECT json_agg(
                 json_build_object(
                     'id', m.id,
@@ -57,6 +58,7 @@ messageRouter.get("/", (req, res) => {
 });
 
 messageRouter.post("/send", (req, res) => {
+  const uuid = uuidv4();
   const { userId, senderId, textMessage } = req.body;
 
   if (!userId || !senderId || !textMessage) {
@@ -66,8 +68,8 @@ messageRouter.post("/send", (req, res) => {
     return res.status(400);
   }
 
-  const sql = `INSERT INTO messages (user_id, sender_id, message_text) VALUES ($1, $2, $3)`;
-  const values = [userId, senderId, textMessage];
+  const sql = `INSERT INTO messages (id, user_id, sender_id, message_text) VALUES ($1, $2, $3, $4)`;
+  const values = [uuid, userId, senderId, textMessage];
 
   pool.query(sql, values, (err, result) => {
     if (err) {
@@ -75,12 +77,9 @@ messageRouter.post("/send", (req, res) => {
       return res.status(500).send(err);
     }
 
-    res.json(result);
-  });
-
-  res.status(201).json({
-    success: true,
-    message: "Message updated.",
+    res.status(201).json({
+      result,
+    });
   });
 });
 

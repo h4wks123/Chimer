@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 
 export async function FetchUsers(
   userId: string,
+  isActive: string | null,
   setIsActive: Dispatch<SetStateAction<string | null>>,
   setUserData: Dispatch<SetStateAction<User[]>>,
 ) {
@@ -19,7 +20,7 @@ export async function FetchUsers(
 
   const data = await response.json();
 
-  if (data.rows.length > 0) setIsActive(data.rows[0].id);
+  if (data.rows.length > 0 && !isActive) setIsActive(data.rows[0].id);
 
   setUserData(data.rows);
 

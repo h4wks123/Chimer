@@ -35,7 +35,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   const navigate = useNavigate();
   const userInfo = loaderData.data.user;
-
   const mobileViewport = window.matchMedia("(width <= 800px)");
   const desktopViewport = window.matchMedia("(width > 800px)");
 
@@ -47,25 +46,25 @@ export default function Home({ loaderData }: Route.ComponentProps) {
     if (e.matches) setMobileView(false);
   });
 
-  useEffect(() => {
-    async function fetchData() {
-      const users = await FetchUsers(
+  async function fetchData() {
+    const users = await FetchUsers(
+      profileData.data.user.id ?? "",
+      isActive,
+      setIsActive,
+      setUserData,
+    );
+
+    const senderId = isActive ?? (users && users.length > 0 ? users[0].id : "");
+
+    if (senderId)
+      await FetchMessages(
         profileData.data.user.id ?? "",
-        setIsActive,
-        setUserData,
+        senderId,
+        setMessageData,
       );
+  }
 
-      const senderId =
-        isActive ?? (users && users.length > 0 ? users[0].id : "");
-
-      if (senderId)
-        await FetchMessages(
-          profileData.data.user.id ?? "",
-          senderId,
-          setMessageData,
-        );
-    }
-
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -108,7 +107,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           {userData.map((user, idx) => (
             <ChatCard
               key={idx}
-              cardId={user.id}
               user={user}
               isActive={isActive}
               setIsActive={setIsActive}
@@ -159,7 +157,12 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </div>
           <h1>Settings</h1>
         </div>
-        <ChatBox messageData={messageData} />
+        <ChatBox
+          key={profileData.data.user.id}
+          userId={profileData.data.user.id ?? ""}
+          messageData={messageData}
+          fetchData={fetchData()}
+        />
       </section>
     </main>
   );

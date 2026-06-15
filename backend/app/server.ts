@@ -26,12 +26,13 @@ const logger = pino({
 app.use(cors(corsOption));
 
 app.use("/api/auth", toNodeHandler(auth));
-app.use("/users", userRouter);
-app.use("/messages", messageRouter);
 
 // Mount express json middleware after Better Auth handler
 // or only apply it to routes that don't interact with Better Auth
 app.use(express.json());
+
+app.use("/users", userRouter);
+app.use("/messages", messageRouter);
 
 const server = app.listen(port, () => {
   logger.info(`Example app listening on port ${port}`);

@@ -32,14 +32,21 @@ export async function FetchMessages(
 
 export async function SendMessage(values: TextInputType) {
   try {
+    const body = {
+      userId: values.userId,
+      senderId: values.senderId,
+      textMessage: values.input,
+    };
+
+
     const response = await fetch(`http://localhost:3000/messages/send`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify(body),
     });
 
     const data = await response.json();
-
   } catch (e) {}
 }

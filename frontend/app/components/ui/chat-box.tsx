@@ -11,13 +11,19 @@ import {
 import { SendMessage } from "~/handlers/messages";
 
 export default function ChatBox({
+  userId,
   messageData,
+  fetchData,
 }: {
+  userId: string;
   messageData: Message | undefined;
+  fetchData: Promise<void>;
 }) {
   const form = useForm<TextInputType>({
     resolver: zodResolver(textInputSchema),
     defaultValues: {
+      userId: "",
+      senderId: "",
       input: "",
     },
   });
@@ -43,7 +49,10 @@ export default function ChatBox({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(async (values: TextInputType) => {
-            // await SendMessage();
+            values.userId = userId;
+            values.senderId = messageData!.id ?? "";
+            await SendMessage(values);
+            await fetchData;
             form.reset();
           })}
           className="bg-secondary rounded-lg flex border border-background"
@@ -62,10 +71,9 @@ export default function ChatBox({
                       {...field}
                     />
                     <InputGroupAddon align={"inline-end"}>
-                      <SendHorizonal
-                        type="submit"
-                        className="size-4 text-primary"
-                      />
+                      <button type="submit">
+                        <SendHorizonal className="size-4 text-primary" />
+                      </button>
                     </InputGroupAddon>
                   </InputGroup>
                 </FormControl>

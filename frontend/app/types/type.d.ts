@@ -9,6 +9,7 @@ type User = {
 };
 
 type Message = {
+  id: string;
   user_name: string;
   messages:
     | {
