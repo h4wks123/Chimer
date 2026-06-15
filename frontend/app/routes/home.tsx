@@ -86,7 +86,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
     const data = await response.json();
 
-    setMessageData(data.rows);
+    setMessageData(data.rows[0]);
 
     return data.rows;
   }

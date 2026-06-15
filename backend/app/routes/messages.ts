@@ -22,9 +22,7 @@ messageRouter.get("/", (req, res) => {
   }
 
   const sql = `
-    SELECT json_build_object(
-        'sender_name', u.user_name,
-        'messages', (
+    SELECT u.user_name, (
             SELECT json_agg(
                 json_build_object(
                     'id', m.id,
@@ -34,14 +32,13 @@ messageRouter.get("/", (req, res) => {
                     'message_created_at', m.message_created_at
                 )
                 ORDER BY m.message_created_at
-            )
+            ) AS messages
             FROM messages m
             WHERE
                 (m.user_id = $1 AND m.sender_id = $2)
                 OR
                 (m.user_id = $2 AND m.sender_id = $1)
         )
-    )
     FROM users u
     WHERE u.id = $2;
   `;

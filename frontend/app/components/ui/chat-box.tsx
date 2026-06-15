@@ -5,15 +5,16 @@ export default function ChatBox({
 }: {
   messageData: Message | undefined;
 }) {
+
   return (
     <section className="p-6 size-full bg-background/50 flex flex-col justify-between gap-2">
       <div className="h-full overflow-y-auto flex flex-col gap-4 text-default">
-        {messageData == null || messageData?.messages.length <= 0 ? (
+        {messageData?.messages == null || messageData?.messages.length <= 0 ? (
           <div className="size-full flex justify-center items-center text-center">
-            <h3 className="mx-auto text-2xl font-semibold">
-              This is the beginning of your legendary conversation with
+            <h3 className="mx-auto text-2xl font-semibold text-wrap">
+              This is the beginning of your legendary conversation with{" "}
+              {messageData?.user_name}
             </h3>
-            <h3>{messageData?.sender_name}</h3>
           </div>
         ) : (
           messageData?.messages.map((message, idx) => (
