@@ -9,15 +9,14 @@ import {
   InputGroupInput,
 } from "../shadcn/input-group";
 import { SendMessage } from "~/handlers/messages";
+import clsx from "clsx";
 
 export default function ChatBox({
   userId,
   messageData,
-  fetchData,
 }: {
   userId: string;
   messageData: Message | undefined;
-  fetchData: Promise<void>;
 }) {
   const form = useForm<TextInputType>({
     resolver: zodResolver(textInputSchema),
@@ -30,7 +29,7 @@ export default function ChatBox({
 
   return (
     <section className="p-6 size-full bg-background/50 flex flex-col justify-between gap-2">
-      <div className="h-full overflow-y-auto flex flex-col gap-4 text-default">
+      <div className="relative h-full overflow-y-auto flex flex-col gap-2 text-default">
         {messageData?.messages == null || messageData?.messages.length <= 0 ? (
           <div className="size-full flex justify-center items-center text-center">
             <h3 className="mx-auto text-2xl font-semibold text-wrap">
@@ -40,7 +39,12 @@ export default function ChatBox({
           </div>
         ) : (
           messageData?.messages.map((message, idx) => (
-            <div className="px-4 py-2 bg-secondary rounded-sm">
+            <div
+              className={clsx(
+                "w-fit px-4 py-2 bg-secondary rounded-sm text-left md:max-w-1/2",
+                messageData?.id == message.sender_id ? "ml-auto" : "mr-auto",
+              )}
+            >
               {message.message_text}
             </div>
           ))
@@ -52,7 +56,6 @@ export default function ChatBox({
             values.userId = userId;
             values.senderId = messageData!.id ?? "";
             await SendMessage(values);
-            await fetchData;
             form.reset();
           })}
           className="bg-secondary rounded-lg flex border border-background"
@@ -71,9 +74,11 @@ export default function ChatBox({
                       {...field}
                     />
                     <InputGroupAddon align={"inline-end"}>
-                      <button type="submit">
-                        <SendHorizonal className="size-4 text-primary" />
-                      </button>
+                      <div>
+                        <button type="submit">
+                          <SendHorizonal className="size-4 text-primary" />
+                        </button>
+                      </div>
                     </InputGroupAddon>
                   </InputGroup>
                 </FormControl>

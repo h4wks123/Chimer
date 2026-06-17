@@ -35,8 +35,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   const navigate = useNavigate();
   const userInfo = loaderData.data.user;
-  const mobileViewport = window.matchMedia("(width <= 800px)");
-  const desktopViewport = window.matchMedia("(width > 800px)");
+  const mobileViewport = window.matchMedia("(width <= 768px)");
+  const desktopViewport = window.matchMedia("(width > 768px)");
 
   mobileViewport.addEventListener("change", (e) => {
     if (e.matches) setMobileView(true);
@@ -161,7 +161,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           key={profileData.data.user.id}
           userId={profileData.data.user.id ?? ""}
           messageData={messageData}
-          fetchData={fetchData()}
         />
       </section>
     </main>
