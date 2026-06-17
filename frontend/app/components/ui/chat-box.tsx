@@ -28,8 +28,8 @@ export default function ChatBox({
   });
 
   return (
-    <section className="p-6 size-full bg-background/50 flex flex-col justify-between gap-2">
-      <div className="relative h-full overflow-y-auto flex flex-col gap-2 text-default">
+    <section className="size-full overflow-y-auto bg-background/50 flex flex-col justify-between">
+      <div className="p-6 relative h-full overflow-y-auto flex flex-col gap-2 text-default">
         {messageData?.messages == null || messageData?.messages.length <= 0 ? (
           <div className="size-full flex justify-center items-center text-center">
             <h3 className="mx-auto text-2xl font-semibold text-wrap">
@@ -58,15 +58,15 @@ export default function ChatBox({
             await SendMessage(values);
             form.reset();
           })}
-          className="bg-secondary rounded-lg flex border border-background"
+          className="my-2 mx-4 bg-secondary rounded-lg flex border border-background"
         >
           <FormField
             control={form.control}
             name="input"
             render={({ field }) => (
-              <FormItem className="size-full bg-transparent text-default">
-                <FormControl>
-                  <InputGroup className="h-12 flex">
+              <FormItem className="size-full bg-transparent">
+                <FormControl className="border-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0">
+                  <InputGroup className="h-12 flex text-white">
                     <InputGroupInput
                       type="input"
                       autoComplete="input"

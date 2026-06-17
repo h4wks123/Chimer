@@ -30,13 +30,21 @@
   --color-error: hsl(0, 85%, 60%);
   --color-updated: hsl(210, 90%, 60%);
 }
-  
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px var(--color-background) inset !important;
   -webkit-text-fill-color: var(--color-default);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
 }
 
 body {
