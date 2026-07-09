@@ -10,6 +10,12 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "chimer_user", "-d", "chimer"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
 
   backend:
     build:
@@ -17,15 +23,23 @@ services:
       dockerfile: ./dockerfile
     container_name: backend
     environment:
-      EXPRESS_ENV: development
       DATABASE_HOST: db
       DATABASE_PORT: 5432
       DATABASE_NAME: chimer
       DATABASE_USERNAME: chimer_user
       DATABASE_PASSWORD: chimer_passwd
+      BETTER_AUTH_URL: http://localhost:3000
+      WEBSITE_URL: http://localhost:5173
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
     restart: no
     ports:
       - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
       - ./backend:/app
       - backend_node_modules:/app/node_modules
@@ -36,7 +50,8 @@ services:
       dockerfile: ./dockerfile
     container_name: frontend
     environment:
-      VITE_API_URL: http://localhost:3000
+      VITE_BETTER_AUTH_URL: http://localhost:3000
+      VITE_WEBSITE_URL: http://localhost:5173
     restart: no
     ports:
       - "5173:5173"

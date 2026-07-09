@@ -1,3 +1,5 @@
+.env
+
 # Frontend
 frontend/DS_Store
 frontend/.env
