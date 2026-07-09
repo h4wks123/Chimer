@@ -13,6 +13,7 @@ const corsOption = {
   origin: process.env.WEBSITE_URL,
   credentials: true,
 };
+
 const logger = pino({
   level: "info",
   transport: {
