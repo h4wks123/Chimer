@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: chimer_user
       POSTGRES_PASSWORD: chimer_passwd
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -19,7 +19,7 @@ services:
     environment:
       EXPRESS_ENV: development
       DATABASE_HOST: db
-      DATABASE_PORT: 3306
+      DATABASE_PORT: 5432
       DATABASE_NAME: chimer
       DATABASE_USERNAME: chimer_user
       DATABASE_PASSWORD: chimer_passwd

@@ -1,0 +1,2 @@
+#!/bin/sh
+PGPASSWORD=$DATABASE_PASSWORD psql -h $DATABASE_HOST -U $DATABASE_USERNAME -d $DATABASE_NAME < /app/db/schema/schema.sql

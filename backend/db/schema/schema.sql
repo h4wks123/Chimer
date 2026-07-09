@@ -1,6 +1,6 @@
-CREATE DATABASE chimer;
+CREATE DATABASE IF NOT EXISTS chimer;
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id text not null primary key, 
     user_name text not null, 
     user_email text not null unique, 
@@ -10,7 +10,7 @@ CREATE TABLE users (
     user_updated_at timestamptz default CURRENT_TIMESTAMP not null
 );
 
-CREATE TABLE sessions (
+CREATE TABLE IF NOT EXISTS sessions (
     id text not null primary key, 
     session_expires_at timestamptz not null, 
     session_token text not null unique, 
@@ -21,7 +21,7 @@ CREATE TABLE sessions (
     user_id text not null references users(id) on delete cascade
 );
 
-CREATE TABLE accounts (
+CREATE TABLE IF NOT EXISTS accounts (
     id text not null primary key, 
     account_secondary_id text not null, 
     account_provider_id text not null, 
@@ -37,7 +37,7 @@ CREATE TABLE accounts (
     account_uploaded_at timestamptz not null
 );
 
-CREATE TABLE verifications (
+CREATE TABLE IF NOT EXISTS verifications (
     id text not null primary key, 
     verification_identifier text not null, 
     verification_value text not null, 
@@ -46,14 +46,14 @@ CREATE TABLE verifications (
     verification_updated_at timestamptz default CURRENT_TIMESTAMP not null
 );
 
-CREATE TABLE friends (
+CREATE TABLE IF NOT EXISTS friends (
     id text not null primary key,
     user_id text not null references users(id) on delete cascade, 
     friend_of_user_id text not null references users(id) on delete cascade, 
     friend_created_at timestamptz default CURRENT_TIMESTAMP not null
 );
 
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
     id text not null primary key,
     user_id text not null references users(id) on delete cascade, 
     sender_id text not null references users(id) on delete cascade, 
@@ -61,8 +61,8 @@ CREATE TABLE messages (
     message_created_at timestamptz default CURRENT_TIMESTAMP not null
 );
 
-CREATE INDEX sessions_user_id_idx on sessions(id);
+CREATE INDEX IF NOT EXISTS sessions_user_id_idx on sessions(id);
 
-CREATE INDEX accounts_user_id_idx on accounts(id);
+CREATE INDEX IF NOT EXISTS accounts_user_id_idx on accounts(id);
 
-CREATE INDEX verifications_verification_identifier_idx on verifications(verification_identifier);
+CREATE INDEX IF NOT EXISTS verifications_verification_identifier_idx on verifications(verification_identifier);

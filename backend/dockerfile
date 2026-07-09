@@ -1,8 +1,11 @@
 FROM node:22-alpine
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN apk add --no-cache postgresql-client
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
+COPY init-db.sh /app/
+RUN chmod +x /app/init-db.sh
 EXPOSE 3000
-CMD ["pnpm", "run", "dev"]
+CMD ["sh", "-c", "sh /app/init-db.sh && pnpm run dev"]
