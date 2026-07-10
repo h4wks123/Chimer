@@ -43,7 +43,7 @@ export default function ChatBox({
             <div
               key={message.id}
               className={clsx(
-                "w-fit px-4 py-2 bg-secondary rounded-sm text-left md:max-w-1/2",
+                "w-fit px-4 py-2 bg-secondary rounded-sm text-left break-all md:max-w-1/2",
                 messageData?.id == message.sender_id ? "ml-auto" : "mr-auto",
               )}
             >

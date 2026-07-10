@@ -160,7 +160,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             />
             <h1>{messageData?.user_name ?? "Chat"}</h1>
           </div>
-          <h1>Settings</h1>
         </div>
         <ChatBox
           key={userInfo.id}
