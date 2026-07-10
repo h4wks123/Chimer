@@ -7,6 +7,7 @@ import messageRouter, { sendMessage } from "./routes/messages.js";
 import userRouter from "./routes/users.js";
 import { pino } from "pino";
 import { Message } from "./models/message.js";
+import { rateLimit } from "express-rate-limit";
 
 const app = express();
 const port = 3000;
@@ -25,7 +26,28 @@ const logger = pino({
   },
 });
 
+const limiter = rateLimit({
+  windowMs: 1000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  ipv6Subnet: 56,
+  handler: (req, res) => {
+    logger.error(`Rate limit exceeded for IP: ${req.ip}`);
+    res.status(429).send({
+      error: "Too many requests, please try again later.",
+      rateLimit: {
+        limit: 10,
+        remaining: 0,
+        resetTime: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+      },
+    });
+  },
+});
+
 app.use(cors(corsOption));
+
+app.use(limiter);
 
 app.use("/api/auth", toNodeHandler(auth));
 
