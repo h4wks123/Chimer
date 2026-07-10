@@ -34,8 +34,9 @@ export default function ChatBox({
         {messageData?.messages == null || messageData?.messages.length <= 0 ? (
           <div className="size-full flex justify-center items-center text-center">
             <h3 className="mx-auto text-2xl font-semibold text-wrap">
-              This is the beginning of your legendary conversation with{" "}
-              {messageData?.user_name}
+              {messageData?.id
+                ? `This is the beginning of your legendary conversation with ${messageData?.user_name}`
+                : `Currently there are no users for you to chat with.`}
             </h3>
           </div>
         ) : (
@@ -76,11 +77,9 @@ export default function ChatBox({
                       {...field}
                     />
                     <InputGroupAddon align={"inline-end"}>
-                      <div>
-                        <button type="submit">
-                          <SendHorizonal className="size-4 text-primary" />
-                        </button>
-                      </div>
+                      <button type="submit">
+                        <SendHorizonal className="size-4 text-primary block mr-4 cursor-pointer" />
+                      </button>
                     </InputGroupAddon>
                   </InputGroup>
                 </FormControl>

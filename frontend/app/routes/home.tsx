@@ -35,20 +35,23 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const [isActive, setIsActive] = useState<string | null>(null);
   const [userData, setUserData] = useState<User[]>([]);
   const [messageData, setMessageData] = useState<Message>();
+  const [isUsersLoading, setIsUsersLoading] = useState(true);
 
   const refreshUsers = useCallback(async () => {
-    await FetchUsers(
-      userInfo.id ?? "",
-      isActive,
-      setIsActive,
-      setUserData,
-    );
+    setIsUsersLoading(true);
+    try {
+      await FetchUsers(userInfo.id ?? "", isActive, setIsActive, setUserData);
+    } finally {
+      setIsUsersLoading(false);
+    }
   }, [isActive, userInfo.id]);
 
   const refreshMessages = useCallback(
     async (conversationId: string | null) => {
-      if (!conversationId) return;
-
+      if (!conversationId) {
+        setMessageData(undefined);
+        return;
+      }
       await FetchMessages(userInfo.id ?? "", conversationId, setMessageData);
     },
     [userInfo.id],
@@ -93,7 +96,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <section
         className={clsx(
           "h-screen py-6 flex flex-col items-start gap-6 border-r border-secondary",
-          isMobileView ? (displayChat ? "hidden" : "w-screen") : "w-full max-w-[350px]",
+          isMobileView
+            ? displayChat
+              ? "hidden"
+              : "w-screen"
+            : "w-full max-w-[350px]",
         )}
       >
         <div className="flex gap-4 px-6 justify-center items-center">
@@ -109,30 +116,43 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         </div>
         <div className="h-px w-full bg-secondary" />
         <div className="h-full w-full flex flex-col gap-4 px-6">
-          {userData.map((user) => (
-            <ChatCard
-              key={user.id}
-              user={user}
-              isActive={isActive}
-              setIsActive={setIsActive}
-              setDisplayChat={setDisplayChat}
-            />
-          ))}
+          {userData.length > 0 ? (
+            userData.map((user) => (
+              <ChatCard
+                key={user.id}
+                user={user}
+                isActive={isActive}
+                setIsActive={setIsActive}
+                setDisplayChat={setDisplayChat}
+              />
+            ))
+          ) : (
+            <div className="my-auto text-default font-semibold">
+              Currently There Are No Registered Users.
+            </div>
+          )}
         </div>
         <div className="h-px w-full bg-secondary" />
         <div className="w-full px-6 flex justify-between items-center">
-          <div className="flex items-center rounded-lg p-2 gap-2">
-            <div className="p-1 bg-primary/50 rounded-sm border-primary border">
-              <UserIcon className="size-6 text-primary" />
+          {isUsersLoading ? (
+            <div className="flex items-center rounded-lg p-2 gap-2 w-full">
+              <div className="size-8 rounded-sm bg-secondary/80 animate-pulse" />
+              <div className="h-4 w-36 rounded-full bg-secondary/80 animate-pulse" />
             </div>
-            <span className="text-default">
-              {userInfo.name
-                ? userInfo.name.length > 25
-                  ? `${userInfo.name.substring(0, 25)}...`
-                  : userInfo.name
-                : "Name not found"}
-            </span>
-          </div>
+          ) : (
+            <div className="flex items-center rounded-lg p-2 gap-2">
+              <div className="p-1 bg-primary/50 rounded-sm border-primary border">
+                <UserIcon className="size-6 text-primary" />
+              </div>
+              <span className="text-default font-semibold">
+                {userInfo.name
+                  ? userInfo.name.length > 25
+                    ? `${userInfo.name.substring(0, 25)}...`
+                    : userInfo.name
+                  : "Name not found"}
+              </span>
+            </div>
+          )}
           <LogOutIcon
             onClick={() => {
               SignOut(navigate);
@@ -158,7 +178,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 isMobileView ? "visible" : "hidden",
               )}
             />
-            <h1>{messageData?.user_name ?? "Chat"}</h1>
+            <h1 className="font-semibold text-default">
+              {messageData?.user_name ?? ""}
+            </h1>
           </div>
         </div>
         <ChatBox
