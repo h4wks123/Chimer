@@ -2,10 +2,11 @@ import express from "express";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./config/auth.js";
 import cors from "cors";
-import { WebSocketServer } from "ws";
-import messageRouter from "./routes/messages.js";
+import { WebSocket, WebSocketServer } from "ws";
+import messageRouter, { sendMessage } from "./routes/messages.js";
 import userRouter from "./routes/users.js";
 import { pino } from "pino";
+import { Message } from "./models/message.js";
 
 const app = express();
 const port = 3000;
@@ -46,5 +47,33 @@ server.on("error", (err) => {
 const wss = new WebSocketServer({ server, path: "/" });
 
 wss.on("connection", (ws, req) => {
-  logger.info("Client connected!");
+  logger.info("Client connected securely!");
+
+  ws.on("message", async (data) => {
+    const message: Message = JSON.parse(data.toString());
+
+    try {
+      await sendMessage(message);
+
+      const payload = JSON.stringify({
+        type: "message:created",
+        userId: message.userId,
+        senderId: message.senderId,
+      });
+
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(payload);
+        }
+      });
+    } catch (err) {
+      logger.error(`Failed to persist or broadcast message: ${err}`);
+      ws.send(
+        JSON.stringify({
+          type: "message:error",
+          error: "Unable to send message.",
+        }),
+      );
+    }
+  });
 });

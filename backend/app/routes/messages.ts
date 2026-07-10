@@ -2,6 +2,7 @@ import { Router } from "express";
 import { pool } from "../config/psql-db";
 import { pino } from "pino";
 import { v4 as uuidv4 } from "uuid";
+import { Message } from "../models/message";
 
 const messageRouter = Router();
 const logger = pino({
@@ -17,6 +18,7 @@ const logger = pino({
 messageRouter.get("/", (req, res) => {
   const userId = req.query.userId;
   const senderId = req.query.senderId;
+  logger.info(`Fetch messages between user: ${userId} and sender: ${senderId}`);
 
   if (!userId || !senderId) {
     logger.error(`Some of the request body are empty: ${userId} ${senderId}`);
@@ -57,30 +59,25 @@ messageRouter.get("/", (req, res) => {
   });
 });
 
-messageRouter.post("/send", (req, res) => {
-  const uuid = uuidv4();
-  const { userId, senderId, textMessage } = req.body;
+export default messageRouter;
 
-  if (!userId || !senderId || !textMessage) {
+export async function sendMessage(message: Message) {
+  logger.info(`Received message from sender id: ${message.senderId}`);
+  const uuid = uuidv4();
+
+  if (!message.userId || !message.senderId || !message.input) {
     logger.error(
-      `Some of the request body are empty: ${userId} ${senderId} ${textMessage}`,
+      `Some of the message request body is empty: ${message.userId} ${message.senderId} ${message.input}`,
     );
-    return res.status(400);
   }
 
   const sql = `INSERT INTO messages (id, user_id, sender_id, message_text) VALUES ($1, $2, $3, $4)`;
-  const values = [uuid, userId, senderId, textMessage];
+  const values = [uuid, message.userId, message.senderId, message.input];
 
-  pool.query(sql, values, (err, result) => {
-    if (err) {
-      logger.error(`Failed to send message: ${err}`);
-      return res.status(500).send(err);
-    }
-
-    res.status(201).json({
-      result,
-    });
-  });
-});
-
-export default messageRouter;
+  try {
+    await pool.query(sql, values);
+  } catch (err) {
+    logger.error(`Failed to send message: ${err}`);
+    throw err;
+  }
+}

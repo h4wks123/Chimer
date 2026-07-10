@@ -8,15 +8,16 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "../shadcn/input-group";
-import { SendMessage } from "~/handlers/messages";
 import clsx from "clsx";
 
 export default function ChatBox({
   userId,
   messageData,
+  onSendMessage,
 }: {
   userId: string;
   messageData: Message | undefined;
+  onSendMessage: (values: TextInputType) => Promise<void> | void;
 }) {
   const form = useForm<TextInputType>({
     resolver: zodResolver(textInputSchema),
@@ -40,6 +41,7 @@ export default function ChatBox({
         ) : (
           messageData?.messages.map((message, idx) => (
             <div
+              key={message.id}
               className={clsx(
                 "w-fit px-4 py-2 bg-secondary rounded-sm text-left md:max-w-1/2",
                 messageData?.id == message.sender_id ? "ml-auto" : "mr-auto",
@@ -55,7 +57,7 @@ export default function ChatBox({
           onSubmit={form.handleSubmit(async (values: TextInputType) => {
             values.userId = userId;
             values.senderId = messageData!.id ?? "";
-            await SendMessage(values);
+            await onSendMessage(values);
             form.reset();
           })}
           className="my-2 mx-4 bg-secondary rounded-lg flex border border-background"

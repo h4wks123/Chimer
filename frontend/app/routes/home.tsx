@@ -5,17 +5,18 @@ import {
   MessageSquare,
   UserIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { data, useNavigate } from "react-router";
 import clsx from "clsx";
 import { SignOut } from "~/handlers/entries";
 import { userContext } from "~/middleware/context";
 import { authMiddleware } from "~/middleware/middleware";
-import { useLoaderData } from "react-router";
 import ChatCard from "~/components/ui/chat-card";
 import ChatBox from "~/components/ui/chat-box";
 import { FetchUsers } from "~/handlers/users";
 import { FetchMessages } from "~/handlers/messages";
+import { useMediaQuery } from "~/hooks/use-media-query";
+import { useChatSocket } from "~/hooks/use-chat-socket";
 
 export const clientMiddleware: Route.MiddlewareFunction[] = [authMiddleware];
 
@@ -26,58 +27,73 @@ export async function clientLoader({ context }: Route.ClientLoaderArgs) {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const [mobileView, setMobileView] = useState(false);
+  const navigate = useNavigate();
+  const userInfo = loaderData.data.user;
+  const isMobileView = useMediaQuery("(width <= 768px)");
+
   const [displayChat, setDisplayChat] = useState(true);
   const [isActive, setIsActive] = useState<string | null>(null);
   const [userData, setUserData] = useState<User[]>([]);
   const [messageData, setMessageData] = useState<Message>();
-  const profileData = useLoaderData();
 
-  const navigate = useNavigate();
-  const userInfo = loaderData.data.user;
-  const mobileViewport = window.matchMedia("(width <= 768px)");
-  const desktopViewport = window.matchMedia("(width > 768px)");
-
-  mobileViewport.addEventListener("change", (e) => {
-    if (e.matches) setMobileView(true);
-  });
-
-  desktopViewport.addEventListener("change", (e) => {
-    if (e.matches) setMobileView(false);
-  });
-
-  async function fetchData() {
-    const users = await FetchUsers(
-      profileData.data.user.id ?? "",
+  const refreshUsers = useCallback(async () => {
+    await FetchUsers(
+      userInfo.id ?? "",
       isActive,
       setIsActive,
       setUserData,
     );
+  }, [isActive, userInfo.id]);
 
-    const senderId = isActive ?? (users && users.length > 0 ? users[0].id : "");
+  const refreshMessages = useCallback(
+    async (conversationId: string | null) => {
+      if (!conversationId) return;
 
-    if (senderId)
-      await FetchMessages(
-        profileData.data.user.id ?? "",
-        senderId,
-        setMessageData,
-      );
-  }
+      await FetchMessages(userInfo.id ?? "", conversationId, setMessageData);
+    },
+    [userInfo.id],
+  );
+
+  const handleMessageCreated = useCallback(
+    async (event: { userId: string; senderId: string }) => {
+      await refreshUsers();
+
+      const currentConversationId =
+        event.userId === userInfo.id ? event.senderId : event.userId;
+
+      if (currentConversationId === isActive) {
+        await refreshMessages(currentConversationId);
+      }
+    },
+    [isActive, refreshMessages, refreshUsers, userInfo.id],
+  );
+
+  const socketRef = useChatSocket({
+    userId: userInfo.id ?? "",
+    onMessageCreated: handleMessageCreated,
+  });
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    refreshUsers();
+  }, [refreshUsers]);
+
+  useEffect(() => {
+    refreshMessages(isActive);
+  }, [isActive, refreshMessages]);
+
+  const handleSendMessage = useCallback(
+    async (values: { userId: string; senderId: string; input: string }) => {
+      socketRef.current?.send(JSON.stringify(values));
+    },
+    [socketRef],
+  );
 
   return (
     <main className="flex">
       <section
         className={clsx(
           "h-screen py-6 flex flex-col items-start gap-6 border-r border-secondary",
-          mobileView
-            ? displayChat
-              ? "hidden"
-              : "w-screen"
-            : "w-full max-w-[350px]",
+          isMobileView ? (displayChat ? "hidden" : "w-screen") : "w-full max-w-[350px]",
         )}
       >
         <div className="flex gap-4 px-6 justify-center items-center">
@@ -91,22 +107,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <div className="bg-primary size-2.5 rounded-full mb-0.5" />
           </div>
         </div>
-        <nav className="text-default flex flex-wrap px-6 gap-4 items-center font-semibold text-md">
-          <div className="border-primary text-primary bg-primary/25 py-1 px-2 rounded-lg border cursor-pointer">
-            All
-          </div>
-          <div className="py-1 px-2 rounded-lg border border-secondary cursor-pointer">
-            Unread
-          </div>
-          <div className="py-1 px-2 rounded-lg border border-secondary cursor-pointer">
-            Groups
-          </div>
-        </nav>
         <div className="h-px w-full bg-secondary" />
         <div className="h-full w-full flex flex-col gap-4 px-6">
-          {userData.map((user, idx) => (
+          {userData.map((user) => (
             <ChatCard
-              key={idx}
+              key={user.id}
               user={user}
               isActive={isActive}
               setIsActive={setIsActive}
@@ -123,7 +128,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <span className="text-default">
               {userInfo.name
                 ? userInfo.name.length > 25
-                  ? userInfo.name.substring(0, 25) + "..."
+                  ? `${userInfo.name.substring(0, 25)}...`
                   : userInfo.name
                 : "Name not found"}
             </span>
@@ -139,7 +144,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <section
         className={clsx(
           "h-screen bg-secondary/50 flex flex-col",
-          mobileView ? (displayChat ? "w-screen" : "hidden") : "w-screen",
+          isMobileView ? (displayChat ? "w-screen" : "hidden") : "w-screen",
         )}
       >
         <div className="px-6 py-6 text-default border-b-secondary bg-background flex flex-wrap justify-between items-center gap-4 border-b">
@@ -150,17 +155,18 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               }}
               className={clsx(
                 "size-4 text-muted hover:text-primary cursor-pointer",
-                mobileView ? "visible" : "hidden",
+                isMobileView ? "visible" : "hidden",
               )}
             />
-            <h1>GC Name</h1>
+            <h1>{messageData?.user_name ?? "Chat"}</h1>
           </div>
           <h1>Settings</h1>
         </div>
         <ChatBox
-          key={profileData.data.user.id}
-          userId={profileData.data.user.id ?? ""}
+          key={userInfo.id}
+          userId={userInfo.id ?? ""}
           messageData={messageData}
+          onSendMessage={handleSendMessage}
         />
       </section>
     </main>
