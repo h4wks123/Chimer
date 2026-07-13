@@ -17,7 +17,6 @@ import { FetchUsers } from "~/handlers/users";
 import { FetchMessages } from "~/handlers/messages";
 import { useMediaQuery } from "~/hooks/use-media-query";
 import { useChatSocket } from "~/hooks/use-chat-socket";
-import { map } from "zod";
 
 export const clientMiddleware: Route.MiddlewareFunction[] = [authMiddleware];
 
@@ -36,15 +35,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const [isActive, setIsActive] = useState<string | null>(null);
   const [userData, setUserData] = useState<User[]>([]);
   const [messageData, setMessageData] = useState<Message>();
-  const [isUsersLoading, setIsUsersLoading] = useState(true);
 
   const refreshUsers = useCallback(async () => {
-    setIsUsersLoading(true);
-    try {
-      await FetchUsers(userInfo.id ?? "", isActive, setIsActive, setUserData);
-    } finally {
-      setIsUsersLoading(false);
-    }
+    await FetchUsers(userInfo.id ?? "", isActive, setIsActive, setUserData);
   }, [isActive, userInfo.id]);
 
   const refreshMessages = useCallback(
@@ -136,12 +129,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         </div>
         <div className="h-px w-full bg-secondary" />
         <div className="w-full px-6 flex justify-between items-center">
-          {isUsersLoading ? (
-            <div className="flex items-center rounded-lg p-2 gap-2 w-full">
-              <div className="size-8 rounded-sm bg-secondary/80 animate-pulse" />
-              <div className="h-4 w-36 rounded-full bg-secondary/80 animate-pulse" />
-            </div>
-          ) : (
+          {userInfo.id ? (
             <div className="flex items-center rounded-lg p-2 gap-2">
               <div className="p-1 bg-primary/50 rounded-sm border-primary border">
                 <UserIcon className="size-6 text-primary" />
@@ -153,6 +141,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                     : userInfo.name
                   : "Name not found"}
               </span>
+            </div>
+          ) : (
+            <div className="flex items-center rounded-lg p-2 gap-2 w-full">
+              <div className="size-8 rounded-sm bg-secondary/80 animate-pulse" />
+              <div className="h-4 w-36 rounded-full bg-secondary/80 animate-pulse" />
             </div>
           )}
           <LogOutIcon
