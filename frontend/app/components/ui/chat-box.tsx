@@ -34,9 +34,13 @@ export default function ChatBox({
         {messageData?.messages == null || messageData?.messages.length <= 0 ? (
           <div className="size-full flex justify-center items-center text-center">
             <h3 className="mx-auto text-2xl font-semibold text-wrap">
-              {messageData?.id
-                ? `This is the beginning of your legendary conversation with ${messageData?.user_name}`
-                : `Currently there are no users for you to chat with.`}
+              {messageData?.id ? (
+                `This is the beginning of your legendary conversation with ${messageData?.user_name}`
+              ) : (
+                <div className="flex items-center justify-center">
+                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                </div>
+              )}
             </h3>
           </div>
         ) : (

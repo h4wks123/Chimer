@@ -19,13 +19,17 @@ export default function ChatCard({
         setDisplayChat(true);
       }}
       className={clsx(
-        "px-2 py-4 rounded-sm  cursor-pointer border border-l-4 ",
+        "px-2 py-4 rounded-sm cursor-pointer border border-l-4 ",
         user.id == isActive
           ? "border-l-primary border-muted bg-secondary"
           : "border-transparent",
       )}
     >
-      <span className="text-default font-semibold">{user.user_name}</span>
+      <span className="text-default font-semibold">
+        {user.user_name.length > 25
+          ? user.user_name.slice(0, 25) + "..."
+          : user.user_name}
+      </span>
     </div>
   );
 }

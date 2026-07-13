@@ -17,6 +17,7 @@ import { FetchUsers } from "~/handlers/users";
 import { FetchMessages } from "~/handlers/messages";
 import { useMediaQuery } from "~/hooks/use-media-query";
 import { useChatSocket } from "~/hooks/use-chat-socket";
+import { map } from "zod";
 
 export const clientMiddleware: Route.MiddlewareFunction[] = [authMiddleware];
 
@@ -115,22 +116,23 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
         <div className="h-px w-full bg-secondary" />
-        <div className="h-full w-full flex flex-col gap-4 px-6">
-          {userData.length > 0 ? (
-            userData.map((user) => (
-              <ChatCard
-                key={user.id}
-                user={user}
-                isActive={isActive}
-                setIsActive={setIsActive}
-                setDisplayChat={setDisplayChat}
-              />
-            ))
-          ) : (
-            <div className="my-auto text-default font-semibold">
-              Currently There Are No Registered Users.
-            </div>
-          )}
+        <div className="h-full w-full overflow-y-auto flex flex-col gap-4 px-6">
+          {userData.length > 0
+            ? userData.map((user) => (
+                <ChatCard
+                  key={user.id}
+                  user={user}
+                  isActive={isActive}
+                  setIsActive={setIsActive}
+                  setDisplayChat={setDisplayChat}
+                />
+              ))
+            : Array.from({ length: 10 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="ml-auto min-h-10 w-full rounded-sm bg-secondary animate-pulse"
+                />
+              ))}
         </div>
         <div className="h-px w-full bg-secondary" />
         <div className="w-full px-6 flex justify-between items-center">
