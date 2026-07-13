@@ -11,12 +11,15 @@ export async function FetchUsers(
   };
 
   const queryString = new URLSearchParams(params).toString();
-  const response = await fetch(`http://localhost:3000/users?${queryString}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetch(
+    `${import.meta.env.VITE_BETTER_AUTH_URL}/users?${queryString}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
 
   const data = await response.json();
 

@@ -8,4 +8,4 @@ COPY . .
 COPY init-db.sh /app/
 RUN chmod +x /app/init-db.sh
 EXPOSE 3000
-CMD ["sh", "-c", "sh /app/init-db.sh && pnpm run dev"]
+CMD ["sh", "-c", "sh /app/init-db.sh && pnpm run start"]

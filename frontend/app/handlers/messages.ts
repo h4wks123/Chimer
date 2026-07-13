@@ -14,7 +14,7 @@ export async function FetchMessages(
 
   const queryString = new URLSearchParams(params).toString();
   const response = await fetch(
-    `http://localhost:3000/messages?${queryString}`,
+    `${import.meta.env.VITE_BETTER_AUTH_URL}/messages?${queryString}`,
     {
       method: "GET",
       headers: {

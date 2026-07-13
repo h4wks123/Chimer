@@ -4,5 +4,12 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
+ARG VITE_BETTER_AUTH_URL
+ARG VITE_WEBSITE_URL
+ARG VITE_WEBSOCKET_URL
+ENV VITE_BETTER_AUTH_URL=${VITE_BETTER_AUTH_URL}
+ENV VITE_WEBSITE_URL=${VITE_WEBSITE_URL}
+ENV VITE_WEBSOCKET_URL=${VITE_WEBSOCKET_URL}
+RUN pnpm run build
 EXPOSE 5173
-CMD ["pnpm", "run", "build", "--", "host"]
+CMD ["pnpm", "run", "start"]

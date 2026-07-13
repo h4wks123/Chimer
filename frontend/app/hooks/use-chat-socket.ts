@@ -14,13 +14,12 @@ type ChatSocketEvent =
 
 type UseChatSocketArgs = {
   userId: string;
-  onMessageCreated: (event: Extract<ChatSocketEvent, { type: "message:created" }>) => void;
+  onMessageCreated: (
+    event: Extract<ChatSocketEvent, { type: "message:created" }>,
+  ) => void;
 };
 
-export function useChatSocket({
-  userId,
-  onMessageCreated,
-}: UseChatSocketArgs) {
+export function useChatSocket({ userId, onMessageCreated }: UseChatSocketArgs) {
   const socketRef = useRef<WebSocket | null>(null);
   const onMessageCreatedRef = useRef(onMessageCreated);
   const hasConnectedRef = useRef(false);
@@ -30,7 +29,7 @@ export function useChatSocket({
   }, [onMessageCreated]);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:3000");
+    const socket = new WebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}`);
     socketRef.current = socket;
 
     socket.onopen = () => {

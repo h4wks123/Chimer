@@ -5,4 +5,12 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
+  server: {
+    proxy: {
+      "/api": {
+        target: process.env.VITE_BETTER_AUTH_URL,
+        changeOrigin: true,
+      },
+    },
+  },
 });
