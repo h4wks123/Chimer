@@ -4,7 +4,7 @@ export async function FetchUsers(
   userId: string,
   isActive: string | null,
   setIsActive: Dispatch<SetStateAction<string | null>>,
-  setUserData: Dispatch<SetStateAction<User[]>>,
+  setUserData: Dispatch<SetStateAction<User[] | null>>,
 ) {
   const params = {
     userId: userId,

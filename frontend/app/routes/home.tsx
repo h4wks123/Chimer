@@ -33,8 +33,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   const [displayChat, setDisplayChat] = useState(true);
   const [isActive, setIsActive] = useState<string | null>(null);
-  const [userData, setUserData] = useState<User[]>([]);
-  const [messageData, setMessageData] = useState<Message>();
+  const [userData, setUserData] = useState<User[] | null>(null);
+  const [messageData, setMessageData] = useState<Message | null>(null);
+  const [isMessagesLoading, setIsMessagesLoading] = useState(false);
 
   const refreshUsers = useCallback(async () => {
     await FetchUsers(userInfo.id ?? "", isActive, setIsActive, setUserData);
@@ -43,10 +44,16 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const refreshMessages = useCallback(
     async (conversationId: string | null) => {
       if (!conversationId) {
-        setMessageData(undefined);
+        setMessageData(null);
+        setIsMessagesLoading(false);
         return;
       }
-      await FetchMessages(userInfo.id ?? "", conversationId, setMessageData);
+      setIsMessagesLoading(true);
+      try {
+        await FetchMessages(userInfo.id ?? "", conversationId, setMessageData);
+      } finally {
+        setIsMessagesLoading(false);
+      }
     },
     [userInfo.id],
   );
@@ -188,6 +195,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           key={userInfo.id}
           userId={userInfo.id}
           messageData={messageData}
+          isMessagesLoading={isMessagesLoading}
+          isUsersLoading={userData == null}
+          hasConversationTarget={(userData?.length ?? 0) > 0}
+          isConversationSelected={isActive != null}
           onSendMessage={handleSendMessage}
         />
       </section>

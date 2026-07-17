@@ -5,7 +5,7 @@ import type { TextInputType } from "~/types/text-input";
 export async function FetchMessages(
   userId: string,
   senderId: string,
-  setMessageData: Dispatch<SetStateAction<Message | undefined>>,
+  setMessageData: Dispatch<SetStateAction<Message | null>>,
 ) {
   const params = {
     senderId: senderId,

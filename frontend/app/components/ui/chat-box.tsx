@@ -17,8 +17,8 @@ export default function ChatBox({
   messageData,
   onSendMessage,
 }: {
-  userId: string | undefined;
-  messageData: Message | undefined;
+  userId: string | null;
+  messageData: Message | null;
   onSendMessage: (values: TextInputType) => Promise<void> | void;
 }) {
   const form = useForm<TextInputType>({
@@ -40,24 +40,18 @@ export default function ChatBox({
     <section className="size-full overflow-y-auto bg-background/50 flex flex-col justify-between">
       <div className="p-6 relative h-full overflow-y-scroll flex flex-col gap-2 text-default snap-y snap-mandatory">
         {messageData?.id == null ? (
-          <div className="size-full flex justify-center items-center text-center">
-            <h3 className="mx-auto text-2xl font-semibold text-wrap">
-              At least one other user must exist for the current user to chat.
-            </h3>
-          </div>
-        ) : messageData?.messages == null ? (
           <div className="size-full flex items-center justify-center">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           </div>
-        ) : messageData?.messages.length == 0 ? (
+        ) : messageData?.messages == null ? (
           <div className="size-full flex justify-center items-center text-center">
             <h3 className="mx-auto text-2xl font-semibold text-wrap">
-              `This is the beginning of your legendary conversation with $
-              {messageData?.user_name}`
+              This is the beginning of your legendary conversation with{" "}
+              {messageData?.user_name}
             </h3>
           </div>
         ) : (
-          messageData?.messages.map((message, idx) => (
+          messageData?.messages?.map((message) => (
             <div
               key={message.id}
               className={clsx(
