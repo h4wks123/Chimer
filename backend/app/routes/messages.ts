@@ -3,6 +3,7 @@ import { pool } from "../config/psql-db";
 import { pino } from "pino";
 import { v4 as uuidv4 } from "uuid";
 import { Message } from "../models/message";
+import { Filter } from "bad-words";
 
 const messageRouter = Router();
 const logger = pino({
@@ -64,12 +65,15 @@ export default messageRouter;
 export async function sendMessage(message: Message) {
   logger.info(`Received message from sender id: ${message.senderId}`);
   const uuid = uuidv4();
+  const filter = new Filter();
 
   if (!message.userId || !message.senderId || !message.input) {
     logger.error(
       `Some of the message request body is empty: ${message.userId} ${message.senderId} ${message.input}`,
     );
   }
+
+  message.input = filter.clean(message.input);
 
   const sql = `INSERT INTO messages (id, user_id, sender_id, message_text) VALUES ($1, $2, $3, $4)`;
   const values = [uuid, message.userId, message.senderId, message.input];
