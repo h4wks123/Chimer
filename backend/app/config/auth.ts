@@ -1,5 +1,15 @@
 import { betterAuth } from "better-auth";
 import { pool } from "./psql-db.js";
+import { pino } from "pino";
+
+const logger = pino({
+  transport: {
+    target: "pino-pretty",
+    options: {
+      colorize: true,
+    },
+  },
+});
 
 export const auth = betterAuth({
   database: pool,
@@ -66,6 +76,27 @@ export const auth = betterAuth({
       value: "verification_value",
       expiresAt: "verification_expires_at",
       identifier: "verification_identifier",
+    },
+  },
+  logger: {
+    level: "info",
+    log: (level, message, ...args) => {
+      if (level == "error") {
+        logger.error({ args }, message);
+        return;
+      }
+      if (level == "info") {
+        logger.info({ args }, message);
+        return;
+      }
+      if (level == "warn") {
+        logger.warn({ args }, message);
+      }
+    },
+  },
+  onAPIError: {
+    onError: (error, ctx) => {
+      logger.error(error);
     },
   },
 });
