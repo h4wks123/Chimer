@@ -9,14 +9,15 @@ import {
   InputGroupInput,
 } from "../shadcn/input-group";
 import clsx from "clsx";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
+import toaster from "./toaster";
 
 export default function ChatBox({
   userId,
   messageData,
   onSendMessage,
 }: {
-  userId: string;
+  userId: string | undefined;
   messageData: Message | undefined;
   onSendMessage: (values: TextInputType) => Promise<void> | void;
 }) {
@@ -38,16 +39,21 @@ export default function ChatBox({
   return (
     <section className="size-full overflow-y-auto bg-background/50 flex flex-col justify-between">
       <div className="p-6 relative h-full overflow-y-scroll flex flex-col gap-2 text-default snap-y snap-mandatory">
-        {messageData?.messages == null || messageData?.messages.length <= 0 ? (
+        {messageData?.id == null ? (
           <div className="size-full flex justify-center items-center text-center">
             <h3 className="mx-auto text-2xl font-semibold text-wrap">
-              {messageData?.id ? (
-                `This is the beginning of your legendary conversation with ${messageData?.user_name}`
-              ) : (
-                <div className="flex items-center justify-center">
-                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                </div>
-              )}
+              At least one other user must exist for the current user to chat.
+            </h3>
+          </div>
+        ) : messageData?.messages == null ? (
+          <div className="size-full flex items-center justify-center">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          </div>
+        ) : messageData?.messages.length == 0 ? (
+          <div className="size-full flex justify-center items-center text-center">
+            <h3 className="mx-auto text-2xl font-semibold text-wrap">
+              `This is the beginning of your legendary conversation with $
+              {messageData?.user_name}`
             </h3>
           </div>
         ) : (
@@ -68,7 +74,14 @@ export default function ChatBox({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(async (values: TextInputType) => {
-            values.userId = userId;
+            console.log(values);
+            if (values.userId == "" || values.senderId == "") {
+              toaster(400, "Cannot send message to a non-existing user.");
+              form.reset();
+              return;
+            }
+
+            values.userId = userId ?? "";
             values.senderId = messageData!.id ?? "";
             await onSendMessage(values);
             form.reset();
