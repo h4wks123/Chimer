@@ -9,6 +9,7 @@ import {
   InputGroupInput,
 } from "../shadcn/input-group";
 import clsx from "clsx";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 export default function ChatBox({
   userId,
@@ -28,9 +29,15 @@ export default function ChatBox({
     },
   });
 
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    bottomRef.current?.scrollIntoView({ block: "end" });
+  }, [messageData?.messages?.length ?? 0]);
+
   return (
     <section className="size-full overflow-y-auto bg-background/50 flex flex-col justify-between">
-      <div className="p-6 relative h-full overflow-y-auto flex flex-col gap-2 text-default">
+      <div className="p-6 relative h-full overflow-y-scroll flex flex-col gap-2 text-default snap-y snap-mandatory">
         {messageData?.messages == null || messageData?.messages.length <= 0 ? (
           <div className="size-full flex justify-center items-center text-center">
             <h3 className="mx-auto text-2xl font-semibold text-wrap">
@@ -56,6 +63,7 @@ export default function ChatBox({
             </div>
           ))
         )}
+        <div ref={bottomRef} />
       </div>
       <Form {...form}>
         <form
