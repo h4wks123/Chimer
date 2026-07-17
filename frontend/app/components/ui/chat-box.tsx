@@ -68,15 +68,14 @@ export default function ChatBox({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(async (values: TextInputType) => {
-            console.log(values);
-            if (values.userId == "" || values.senderId == "") {
+            if (userId == null || messageData?.id == null) {
               toaster(400, "Cannot send message to a non-existing user.");
               form.reset();
               return;
             }
 
-            values.userId = userId ?? "";
-            values.senderId = messageData!.id ?? "";
+            values.userId = userId;
+            values.senderId = messageData!.id;
             await onSendMessage(values);
             form.reset();
           })}
