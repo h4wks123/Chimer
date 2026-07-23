@@ -5,7 +5,7 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev --host 0.0.0.0",
-    "start": "react-router-serve ./build/client -l 5173",
+    "start": "react-router-serve ./build/client -l 443",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
