@@ -28,8 +28,8 @@ services:
       DATABASE_NAME: chimer
       DATABASE_USERNAME: chimer_user
       DATABASE_PASSWORD: chimer_passwd
-      BETTER_AUTH_URL: http://18.138.3.246:3000
-      WEBSITE_URL: http://18.138.3.246:443
+      BETTER_AUTH_URL: http://localhost:3000
+      WEBSITE_URL: http://localhost:5173
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
@@ -49,17 +49,17 @@ services:
       context: ./frontend
       dockerfile: ./dockerfile
       args:
-        VITE_BETTER_AUTH_URL: http://18.138.3.246:3000
-        VITE_WEBSITE_URL: http://18.138.3.246:443
-        VITE_WEBSOCKET_URL: ws://18.138.3.246:3000
+        VITE_BETTER_AUTH_URL: http://localhost:3000
+        VITE_WEBSITE_URL: http://localhost:5173
+        VITE_WEBSOCKET_URL: ws://localhost:3000
     environment:
-      VITE_BETTER_AUTH_URL: http://18.138.3.246:3000
-      VITE_WEBSITE_URL: http://18.138.3.246:443
-      VITE_WEBSOCKET_URL: ws://18.138.3.246:3000
+      VITE_BETTER_AUTH_URL: http://localhost:3000
+      VITE_WEBSITE_URL: http://localhost:5173
+      VITE_WEBSOCKET_URL: ws://localhost:3000
     container_name: frontend
     restart: no
     ports:
-      - "443:443"
+      - "5173:5173"
     depends_on:
       - backend
     volumes:
